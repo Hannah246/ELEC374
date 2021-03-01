@@ -1,0 +1,70 @@
+module alu(input [4:0] aluControl, input [31:0] BusMuxInY, input [31:0] BusMuxOut, output [31:0] Zlowout, output [31:0] Zhighout);
+
+//have two outputs instead
+reg [63:0] ZOut;
+reg [31:0] COut;
+reg [31:0] temp;
+integer i;
+
+always @ (aluControl or BusMuxInY or BusMuxOut) begin
+    if(aluControl == 00011) begin //Add
+        COut <= BusMuxInY + BusMuxOut;
+	 end
+    else if(aluControl == 00100) begin //Sub
+        COut <= BusMuxInY - BusMuxOut;
+	 end
+    else if(aluControl == 00101) begin //Shift Right
+        for (i = 1 ; i < 32 ; i = i + 1)
+            COut[i] = BusMuxInY[i-1];
+        COut[0] = 0;
+	 end
+    else if(aluControl == 00110) begin //Shift Left
+        for (i = 0 ; i < 31 ; i = i + 1)
+            COut[i] = BusMuxInY[i+1];
+        COut[31] = 0;
+	 end
+    else if(aluControl == 00111) begin //Rotate Right
+        for (i = 1 ; i < 32 ; i = i + 1)
+            COut[i] = BusMuxInY[i-1];
+        COut[0] = BusMuxInY[31];
+	 end
+    else if(aluControl == 01000) begin //Rotate Left
+        for (i = 0 ; i < 31 ; i = i + 1)
+            COut[i] = BusMuxInY[i+1];
+        COut[31] = BusMuxInY[0];
+	 end
+    else if(aluControl == 01001) begin //AND
+    //loop with for loop, then use logial and for each bit
+        for (i = 0 ; i < 32 ; i = i + 1)
+            COut[i] = BusMuxInY[i] & BusMuxOut[i];
+	 end
+    else if(aluControl == 01010) begin //OR
+        for (i = 0 ; i < 32 ; i = i + 1)
+            COut[i] = BusMuxInY[i] | BusMuxOut[i];
+	 end
+    else if(aluControl == 01110) begin //Multiply
+        //COut <=
+	 end
+    else if(aluControl == 01111) begin //Divide
+        COut <= BusMuxInY / BusMuxOut;
+	 end
+    else if(aluControl == 10000) begin //Negate
+        COut <= BusMuxInY*-1;
+	 end
+    else if(aluControl == 10001) begin //Not
+        for (i = 0 ; i < 32 ; i = i + 1)
+            COut[i] = ~BusMuxInY[i];
+	 end
+	 temp = {32{COut[31]}};
+	// ZOut[63:0] = {temp, COut};
+	// assign the results to z high and z low 
+	// no need for z out, its redundant
+	
+end
+
+assign Zhighout = temp; //ZOut[31:0]
+assign Zlowout = COut; // ZOut[63:32]
+
+endmodule
+
+// Z register holds the results of the operation in ALU

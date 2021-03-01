@@ -1,0 +1,50 @@
+`timescale 1ns/10ps
+
+module regTest; 
+
+reg Clock, clear,R0In;
+reg [31:0] out;
+wire [31:0] BusMuxInR0;
+
+parameter   Default = 4'b0000, Reg_load2= 4'b0001, timeout = 500;
+    reg[3:0] Present_state= Default;
+
+myRegister R0(Clock, clear, R0In, out, BusMuxInR0);
+ 
+always begin 
+	#0.5 Clock <= !Clock; 
+    // forever #10 Clock =~Clock;
+end
+
+initial begin 
+	#100 $finish; 
+	Clock <= 0;
+end 
+
+always @(posedge Clock)     //finite state machine; if clock rising-edge
+    begin
+        case (Present_state)
+            Default  :   #40 Present_state = Reg_load2;
+          
+        endcase
+    end
+    always @ (Present_state);
+
+
+
+always @(Present_state)     // do the required job ineach state
+    begin
+        case (Present_state)              //assert the required signals in each clock cycle
+            Default: begin
+                clear <= 0;
+                R0In <= 1;
+                out <= 32'b1;
+            end
+            Reg_load2: begin
+                clear <= 0;
+                R0In <= 1;
+                out <= 32'b0;
+            end
+        endcase
+    end
+endmodule
