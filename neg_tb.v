@@ -4,10 +4,10 @@ module neg_tb;
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
-	reg [4:0] Operator;
+	 reg [4:0] Operator;
     reg clk;
     reg [31:0] Mdatain;
-	reg clear; 
+	 reg clear; 
 
     parameter   Default = 4'b0000, Reg_load1a= 4'b0001, Reg_load1b= 4'b0010, Reg_load2a= 4'b0011, 
                 Reg_load2b = 4'b0100, Reg_load3a = 4'b0101, Reg_load3b = 4'b0110, T0= 4'b0111, 
@@ -96,7 +96,7 @@ always @(Present_state)     // do the required job ineach state
                 #5 Operator <= 5'b10000; // op code for NEG
             end
             T4: begin
-                Zlowout <= 1; r5in <= 1; 
+                Zlowout <= 1; R5in <= 1; 
             end 
         endcase
     end

@@ -22,28 +22,28 @@ always @ (aluControl) begin
         COut = BusMuxInY - BusMuxOut;
 	 end
     else if(aluControl == 5'b00101) begin //Shift Right
-        for (i = 1 ; i < 32 ; i = i + 1) begin 
-            COut[i] = BusMuxInY[i-1];
-		  end 
-        COut[0] = 0;
-	 end
-    else if(aluControl == 5'b00110) begin //Shift Left
         for (i = 0 ; i < 31 ; i = i + 1) begin
             COut[i] = BusMuxInY[i+1];
 		  end 
         COut[31] = 0;
 	 end
-    else if(aluControl == 5'b00111) begin //Rotate Right
-        for (i = 1 ; i < 32 ; i = i + 1) begin 
+    else if(aluControl == 5'b00110) begin //Shift Left
+		  for (i = 1 ; i < 32 ; i = i + 1) begin 
             COut[i] = BusMuxInY[i-1];
 		  end 
-        COut[0] = BusMuxInY[31];
+        COut[0] = 0;
 	 end
-    else if(aluControl == 5'b01000) begin //Rotate Left
+    else if(aluControl == 5'b00111) begin //Rotate Right
         for (i = 0 ; i < 31 ; i = i + 1) begin 
             COut[i] = BusMuxInY[i+1];
 		  end 
         COut[31] = BusMuxInY[0];
+	 end
+    else if(aluControl == 5'b01000) begin //Rotate Left
+		  for (i = 1 ; i < 32 ; i = i + 1) begin 
+            COut[i] = BusMuxInY[i-1];
+		  end 
+        COut[0] = BusMuxInY[31];
 	 end
     else if(aluControl == 5'b01001) begin //AND
     //loop with for loop, then use logial and for each bit 
@@ -57,17 +57,32 @@ always @ (aluControl) begin
 		  end 
 	 end 
     else if(aluControl == 5'b01110) begin //Multiply
-        //COut <=
+        BoothMulti mult(BusMuxOut, BusMuxInY); 
 	 end
     else if(aluControl == 5'b01111) begin //Divide
         COut = BusMuxInY / BusMuxOut;
 	 end
     else if(aluControl == 5'b10000) begin //Negate
-        COut = BusMuxInY*-1;
-	 end
-    else if(aluControl == 5'b10001) begin //Not
         for (i = 0 ; i < 32 ; i = i + 1) begin 
-            COut[i] = ~BusMuxInY[i];
+            //COut[i] = ~BusMuxInY[i];
+				if (BusMuxInY[i] == 1'b1) begin 
+					COut[i] = 1'b0; 
+				end 
+				else begin
+					COut[i] = 1'b1; 
+				end 
+		  end 
+		  COut[0] = COut[0] + 1'b1; 
+	 end
+    else if(aluControl == 5'b10001) begin // Not
+        for (i = 0 ; i < 32 ; i = i + 1) begin 
+            //COut[i] = ~BusMuxInY[i];
+				if (BusMuxInY[i]) begin 
+					COut[i] = 0; 
+				end 
+				else begin
+					COut[i] = 1; 
+				end 
 		  end 
 	 end
 	 temp = {32{COut[31]}};

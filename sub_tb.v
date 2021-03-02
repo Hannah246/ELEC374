@@ -4,10 +4,10 @@ module sub_tb;
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
-	reg [4:0] Operator;
+	 reg [4:0] Operator;
     reg clk;
     reg [31:0] Mdatain;
-	reg clear; 
+	 reg clear; 
 
     parameter   Default = 4'b0000, Reg_load1a= 4'b0001, Reg_load1b= 4'b0010, Reg_load2a= 4'b0011, 
                 Reg_load2b = 4'b0100, Reg_load3a = 4'b0101, Reg_load3b = 4'b0110, T0= 4'b0111, 
@@ -81,32 +81,6 @@ always @(Present_state)     // do the required job ineach state
                 MDRout <= 1; R5in <= 1;  
                 #5 MDRout <= 0; R5in <= 0;		// initialize R5 with the value $26 
             end
-            T0: begin //see if you need to de-assert these signals
-                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
-            end
-            T1: begin
-                Zlowout<= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-                Mdatain <= 32'h52920000;    // opcode for "or R5, R2, R4” hopefully
-            end
-            T2: begin
-                MDRout<= 1; IRin <= 1; 
-            end
-            T3: begin
-                R2out<= 1; Yin <= 1; 
-            end
-            T4: begin
-                R2out <= 0; Yin <= 0; 
-                R4out<= 1; 
-                #5 Operator <= 5'b01010; // op code for OR
-                #10 Zin <= 1; 
-            end
-            T5: begin
-                R4out <= 0; Zin <= 0; 
-                Zlowout<= 1; R5in <= 1; 
-            end
-        endcase
-    end
-endmodule
             T0: begin //see if you need to de-assertthese signals
                 PCout<= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
             end

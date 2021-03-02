@@ -4,10 +4,10 @@ module add_tb;
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
-	reg [4:0] Operator;
+	 reg [4:0] Operator;
     reg clk;
     reg [31:0] Mdatain;
-	reg clear; 
+	 reg clear; 
 
     parameter   Default = 4'b0000, Reg_load1a= 4'b0001, Reg_load1b= 4'b0010, Reg_load2a= 4'b0011, 
                 Reg_load2b = 4'b0100, Reg_load3a = 4'b0101, Reg_load3b = 4'b0110, T0= 4'b0111, 
@@ -86,7 +86,7 @@ always @(Present_state)     // do the required job ineach state
             end
             T1: begin
                 Zlowout<= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-                Mdatain <= 32'h1A920000;   // opcode for “add R5, R2, R4” i think hopefuly
+                Mdatain <= 32'h35240000;   // opcode for “add R5, R2, R4” i think hopefuly
             end
             T2: begin
                 MDRout<= 1; IRin <= 1; 

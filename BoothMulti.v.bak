@@ -1,27 +1,17 @@
-module BoothMulti(
-	input [31:0] BusMuxOut, 
-	input [31:0] Yout, 
-	output Cout, 
-	output busy
-); 
-
-initial begin
-	clk = 0;
-	forever #10 clk = ~clk; 
-end 
+module BoothMulti(input [4:0] aluControl, input [31:0] BusMuxOut, input [31:0] Yout, input clock, output Cout, output busy); 
 
     reg [31:0] A, Q, M; 
     reg Q_1; 
     reg [31:0] count; 
     wire [31:0] sum, difference; 
     
-    always @ (posedge clk) begin 
+    always @ (posedge clock) begin 
 
         if (Present_state) begin 
              
             A <= 32'b0
-            M <= BusMuxOut; 
-            Q <= Yout; 
+            M <= mc; 
+            Q <= mp; 
             Q_1 <= 1'b0; 
             count <= 32'b0; 
 
@@ -37,8 +27,8 @@ end
     end 
 
     COut = A + M + 1'b0; // adder 
-    COut = (Q - M) + 1'b1; // substracter
+    COut = Q - M + 1'b1; // substracter
     assign COut =  {A, Q}; // product 
     assign busy = (count < 32); 
 
-endmodule
+endmodule; 

@@ -4,14 +4,15 @@ module div_tb;
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
-	reg [4:0] Operator;
+	 reg [4:0] Operator;
     reg clk;
     reg [31:0] Mdatain;
-	reg clear; 
+	 reg clear; 
+	 reg Zhighout; 
 
     parameter   Default = 4'b0000, Reg_load1a= 4'b0001, Reg_load1b= 4'b0010, Reg_load2a= 4'b0011, 
                 Reg_load2b = 4'b0100, Reg_load3a = 4'b0101, Reg_load3b = 4'b0110, T0= 4'b0111, 
-                T1= 4'b1000,T2= 4'b1001, T3= 4'b1010, T4= 4'b1011, T5= 4'b1100;
+                T1= 4'b1000,T2= 4'b1001, T3= 4'b1010, T4= 4'b1011, T5= 4'b1100, T6 = 4'b1101;
     reg[3:0] Present_state= Default;
 
 DataPath DUT(Mdatain, PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, incPC, Read, Operator, clk, clear, 
@@ -55,7 +56,7 @@ always @(Present_state)     // do the required job ineach state
 			    clear <= 0;
             end
             Reg_load1a: begin
-                Mdatain<= 32'h00000022;
+                Mdatain<= 32'h00000024;
                 // Read = 0; MDRin = 0;				//the first zero is there for completeness
                 #10 Read <= 1; MDRin <= 1;  
             end
@@ -97,7 +98,7 @@ always @(Present_state)     // do the required job ineach state
             T4: begin
                 R2out <= 0; Yin <= 0; 
                 R4out<= 1; 
-                #5 Operator <= 5'b01111; // op code for MUL
+                #5 Operator <= 5'b01111; // op code for DIV
                 #10 Zin <= 1; 
             end
             T5: begin

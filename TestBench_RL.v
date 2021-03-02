@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module or_tb; 
+module TestBench_RL; 
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
@@ -24,6 +24,18 @@ initial begin
 	clk = 0;
 	forever #10 clk = ~clk; 
 end 
+
+//always begin 
+//	#0.5 clk <= !clk; 
+//    // forever #10 clk =~clk;
+//end
+//
+//initial begin 
+//	#100 $finish; 
+//	clk <= 0;
+//end 
+
+
 
 always @(posedge clk)     //finite state machine; if clk rising-edge
     begin
@@ -58,15 +70,17 @@ always @(Present_state)     // do the required job ineach state
                 Mdatain<= 32'h00000022;
                 // Read = 0; MDRin = 0;				//the first zero is there for completeness
                 #10 Read <= 1; MDRin <= 1;  
+                //#15 Read <= 0; MDRin <= 0;
             end
             Reg_load1b: begin
                 #10 MDRout<= 1; R2in <= 1;  
                 #15 MDRout<= 0; R2in <= 0;     // initialize R2 with the value $22
             end
             Reg_load2a: begin 
-				Read <= 0; MDRin <= 0;
+					 Read <= 0; MDRin <= 0;
                 #5 Mdatain <= 32'h00000024;
-                #10 Read <= 1; MDRin <= 1; 
+                #10 Read <= 1; MDRin <= 1;  
+                //#15 Read <= 0; MDRin <= 0;
             end
             Reg_load2b: begin
                 #10 MDRout<= 1; R4in <= 1;  
@@ -85,28 +99,30 @@ always @(Present_state)     // do the required job ineach state
                 PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
             end
             T1: begin
-                Zlowout<= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-                Mdatain <= 32'h52920000;    // opcode for "or R5, R2, R4” hopefully
+                Zlowout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
+                Mdatain <= 32'h10520000;   		//opcode for “and R5, R2, R4”
             end
             T2: begin
                 MDRout<= 1; IRin <= 1; 
             end
             T3: begin
-                R2out<= 1; Yin <= 1; 
+                R2out <= 1; Yin <= 1; 
+					 
             end
             T4: begin
-                R2out <= 0; Yin <= 0; 
+				    R2out <= 0; 
+					 Yin <= 0; 
                 R4out<= 1; 
-                #5 Operator <= 5'b01010; // op code for OR
-                #10 Zin <= 1; 
+					 #5 Operator <= 5'b01000; // RL code 
+					 #10 Zin <= 1; 
+					 
             end
             T5: begin
-                R4out <= 0; Zin <= 0; 
+					 R4out <= 0; 
+					 Zin <= 0; 
                 Zlowout<= 1; R5in <= 1; 
+					 
             end
         endcase
     end
 endmodule
-
-
-
