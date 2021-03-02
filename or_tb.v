@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module TestBench; 
+module or_tb; 
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
