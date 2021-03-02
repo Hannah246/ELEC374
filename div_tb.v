@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module add_tb; 
+module div_tb; 
     reg PCout, Zlowout, MDRout, R2out, R4out;// add any other signals to see in your simulation
     reg MARin, Zin, PCin, MDRin, IRin, Yin;
     reg IncPC,Read, R5in, R2in, R4in;
@@ -52,7 +52,7 @@ always @(Present_state)     // do the required job ineach state
                 PCin <=0;   MDRin <= 0;   IRin  <= 0;   Yin <= 0;  
                 IncPC <= 0;   Read <= 0;   Operator <= 5'b00000;
                 R5in <= 0; R2in <= 0; R4in <= 0; Mdatain <= 32'h00000000;
-					 clear <= 0;
+			    clear <= 0;
             end
             Reg_load1a: begin
                 Mdatain<= 32'h00000022;
@@ -73,7 +73,7 @@ always @(Present_state)     // do the required job ineach state
                 #15 MDRout<= 0; R4in <= 0;		// initialize R4 with the value $24 
             end
             Reg_load3a: begin 
-					 Read <= 0; MDRin <= 0;
+				Read <= 0; MDRin <= 0;
                 #2 Mdatain <= 32'h00000026;
                 #4 Read <= 1; MDRin <= 1;  
             end
@@ -81,12 +81,12 @@ always @(Present_state)     // do the required job ineach state
                 MDRout <= 1; R5in <= 1;  
                 #5 MDRout <= 0; R5in <= 0;		// initialize R5 with the value $26 
             end
-            T0: begin //see if you need to de-assertthese signals
-                PCout<= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
+            T0: begin //see if you need to de-assert these signals
+                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
             end
             T1: begin
                 Zlowout<= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-                Mdatain <= 32'h1A920000;   // opcode for “add R5, R2, R4” i think hopefuly
+                Mdatain <= 32'hF2400000;   // opcode for "div R2, R4” 
             end
             T2: begin
                 MDRout<= 1; IRin <= 1; 
@@ -97,16 +97,20 @@ always @(Present_state)     // do the required job ineach state
             T4: begin
                 R2out <= 0; Yin <= 0; 
                 R4out<= 1; 
-                #5 Operator <= 5'b00011; // op code for ADD
-                #10 Zin <= 1;
+                #5 Operator <= 5'b01111; // op code for MUL
+                #10 Zin <= 1; 
             end
             T5: begin
                 R4out <= 0; Zin <= 0; 
-                Zlowout<= 1; R5in <= 1; 
+                Zlowout <= 1; R5in <= 1; 
+                // LOin <= 1;      which var would this be
             end
+            T6: begin 
+                Zhighout <= 1; 
+                // HIin <= 1;       ??
+            end 
         endcase
     end
 endmodule
-
 
 

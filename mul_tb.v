@@ -86,7 +86,7 @@ always @(Present_state)     // do the required job ineach state
             end
             T1: begin
                 Zlowout<= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-                Mdatain <= 32'h72920000;   // opcode for "mul R5, R2, R4” 
+                Mdatain <= 32'hE2400000;   // opcode for "mul R2, R4” 
             end
             T2: begin
                 MDRout<= 1; IRin <= 1; 
@@ -97,7 +97,7 @@ always @(Present_state)     // do the required job ineach state
             T4: begin
                 R2out <= 0; Yin <= 0; 
                 R4out<= 1; 
-                #5 Operator <= 5'b01110; // op code for OR
+                #5 Operator <= 5'b01110; // op code for MUL
                 #10 Zin <= 1; 
             end
             T5: begin
