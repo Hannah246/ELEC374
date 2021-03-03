@@ -1,8 +1,8 @@
 module BoothMulti(
 	input [31:0] BusMuxOut, 
 	input [31:0] Yout, 
-	output Cout, 
-	output busy
+	output [31:0] Cout
+	//output busy
 ); 
 
 initial begin

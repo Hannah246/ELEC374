@@ -7,14 +7,15 @@ module ALU(
 );
 
 //have two outputs instead
-reg [63:0] ZOut;
 reg [31:0] COut;
 reg [31:0] temp;
 reg [31:0] temp1; 
+reg [31:0] temp2; 
 integer i;
 
 always @ (aluControl) begin
 	 temp1 = BusMuxOut; 
+	 temp2 = BusMuxInY; 
     if(aluControl == 5'b00011) begin //Add
         COut = BusMuxInY + BusMuxOut;
 	 end
@@ -57,32 +58,20 @@ always @ (aluControl) begin
 		  end 
 	 end 
     else if(aluControl == 5'b01110) begin //Multiply
-        BoothMulti mult(BusMuxOut, BusMuxInY); 
+        //BoothMulti mult(BusMuxOut, BusMuxInY, Cout); 
 	 end
     else if(aluControl == 5'b01111) begin //Divide
         COut = BusMuxInY / BusMuxOut;
 	 end
-    else if(aluControl == 5'b10000) begin //Negate
+    else if(aluControl == 5'b10000) begin // Negate
         for (i = 0 ; i < 32 ; i = i + 1) begin 
-            //COut[i] = ~BusMuxInY[i];
-				if (BusMuxInY[i] == 1'b1) begin 
-					COut[i] = 1'b0; 
-				end 
-				else begin
-					COut[i] = 1'b1; 
-				end 
+				COut[i] = ~temp1[i]; 
 		  end 
 		  COut[0] = COut[0] + 1'b1; 
 	 end
     else if(aluControl == 5'b10001) begin // Not
         for (i = 0 ; i < 32 ; i = i + 1) begin 
-            //COut[i] = ~BusMuxInY[i];
-				if (BusMuxInY[i]) begin 
-					COut[i] = 0; 
-				end 
-				else begin
-					COut[i] = 1; 
-				end 
+				COut[i] = ~temp1[i]; 
 		  end 
 	 end
 	 temp = {32{COut[31]}};
