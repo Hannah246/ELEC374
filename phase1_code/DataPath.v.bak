@@ -1,0 +1,68 @@
+module Datapath(input PCout,input Zlowout, input MDRout, input R2out, input R4out, input MARin, input Zin, input PCin, input MDRin, input IRin, input Yin, input incPC, input Read, input aluControl, input R5in, input R2in, input R4in, input clock, input clear, input [31:0] MDatain);
+
+//registers run behavior every positive clock edge, bus will update BusMuxOUt when a change in register output is detected
+//define signals that will connect regiters to bus
+wire [31:0] BusMuxOut; 
+wire [31:0] BusMuxInR0;
+wire [31:0] BusMuxInR1;
+wire [31:0] BusMuxInR2;
+wire [31:0] BusMuxInR3;
+wire [31:0] BusMuxInR4;
+wire [31:0] BusMuxInR5;
+wire [31:0] BusMuxInR6;
+wire [31:0] BusMuxInR7;
+wire [31:0] BusMuxInR8;
+wire [31:0] BusMuxInR9;
+wire [31:0] BusMuxInR10;
+wire [31:0] BusMuxInR11;
+wire [31:0] BusMuxInR12;
+wire [31:0] BusMuxInR13;
+wire [31:0] BusMuxInR14;
+wire [31:0] BusMuxInR15;
+wire [31:0] BusMuxInZHi;
+wire [31:0] BusMuxInZLo;
+wire [31:0] BusMuxInPC;
+wire [31:0] BusMuxInMDR;
+wire [31:0] BusMuxInRinP;
+wire [31:0] BusMuxInRCSign;
+wire [31:0] BusMuxInY;
+
+//instantiate all registers
+ myRegister R0(clock, clear, R0In, BusMuxOut, BusMuxInR0);
+ myRegister R1(clock, clear, R1In, BusMuxOut, BusMuxInR1);
+ myRegister R2(clock, clear, R2In, BusMuxOut, BusMuxInR2);
+ myRegister R3(clock, clear, R3In, BusMuxOut, BusMuxInR3);
+ myRegister R4(clock, clear, R4In, BusMuxOut, BusMuxInR4);
+ myRegister R5(clock, clear, R5In, BusMuxOut, BusMuxInR5);
+ myRegister R6(clock, clear, R6In, BusMuxOut, BusMuxInR6);
+ myRegister R7(clock, clear, R7In, BusMuxOut, BusMuxInR7);
+ myRegister R8(clock, clear, R8In, BusMuxOut, BusMuxInR8);
+ myRegister R9(clock, clear, R9In, BusMuxOut, BusMuxInR9);
+ myRegister R10(clock, clear, R10In, BusMuxOut, BusMuxInR10);
+ myRegister R11(clock, clear, R11In, BusMuxOut, BusMuxInR11);
+ myRegister R12(clock, clear, R12In, BusMuxOut, BusMuxInR12);
+ myRegister R13(clock, clear, R13In, BusMuxOut, BusMuxInR13);
+ myRegister R14(clock, clear, R14In, BusMuxOut, BusMuxInR14);
+ myRegister R15(clock, clear, R15In, BusMuxOut, BusMuxInR15);
+ myRegister RHi(clock, clear, RHiIn, BusMuxOut, BusMuxInRHi);
+ myRegister RLO(clock, clear, RLOIn, BusMuxOut, BusMuxInRLo);
+ myRegister RZHi(clock, clear, RZHiIn, BusMuxOut, BusMuxInZHi);
+ myRegister RZLO(clock, clear, RZLOIn, BusMuxOut, BusMuxInZLo);
+ myRegister PC(clock, clear, PCIn, BusMuxOut, BusMuxInPC);
+ mdr MDR(clock, BusMuxOut, MDatain, clear, MDRin, Read, BusMuxInMDR);
+ myRegister RInP(clock, clear, RInPIn, BusMuxOut, BusMuxInRInP);
+ myRegister RCSign(clock, clear, RCSignIn, BusMuxOut, BusMuxInRCSign);
+
+//instantiate bus
+bus cpuBUS(BusMuxInR0,BusMuxInR1,BusMuxInR2, BusMuxInR3,BusMuxInR4,BusMuxInR5,BusMuxInR6,BusMuxInR7,BusMuxInR8,BusMuxInR9,BusMuxInR10,
+BusMuxInR11,BusMuxInR12,BusMuxInR13,BusMuxInR14,BusMuxInR15,BusMuxInHi,BusMuxInLo,BusMuxInZHi,BusMuxInZLo,BusMuxInPC,
+BusMuxInMDR,BusMuxInRInP,BusMuxInRCSign,R1out,R1out,R2out,R3out,R4out,R5out,R6out,R7out,R8out,R9out,R10out,R11out,R12out,
+R13out,R14out,R15out,HIout,LOout,Zhighout,Zlowout,PCout,MDRout,INportout,Cout,BusMuxOut);
+endmodule
+
+//we essentially need to perform an action anytime one of the control signals changes
+// testbench changes state every rising-edge of clock, does the job associated with state for each
+//#10 = time delay of 10 before instruction is ran, same concept with #15
+// wires are used to create connection between to ports (input and output port), they do not store data, only drive data
+// MDRout = 1, updates BusMuxOut with value of BusMuxInMDR, since R2in  =1, R2 will hold value (write to register)
+// the always @ block is used for cyclic behavior

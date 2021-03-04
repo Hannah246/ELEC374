@@ -11,9 +11,13 @@ reg [31:0] COut;
 reg [31:0] temp;
 reg [31:0] temp1; 
 reg [31:0] temp2; 
+wire [63:0] ZOut; 
 integer i;
 
+boothmult Mult(ZOut, BusMuxInY, BusMuxOut);
+
 always @ (aluControl) begin
+	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 
     if(aluControl == 5'b00011) begin //Add
@@ -58,7 +62,8 @@ always @ (aluControl) begin
 		  end 
 	 end 
     else if(aluControl == 5'b01110) begin //Multiply
-        //BoothMulti mult(BusMuxOut, BusMuxInY, Cout); 
+        COut = ZOut[31:0];
+        temp = ZOut[63:32];
 	 end
     else if(aluControl == 5'b01111) begin //Divide
         COut = BusMuxInY / BusMuxOut;
@@ -74,7 +79,8 @@ always @ (aluControl) begin
 				COut[i] = ~temp1[i]; 
 		  end 
 	 end
-	 temp = {32{COut[31]}};
+	 if(aluControl != 5'b01111)
+	    temp = {32{COut[31]}};
 	// assign the results to z high and z low 
 	
 end
