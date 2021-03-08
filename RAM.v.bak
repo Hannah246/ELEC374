@@ -37,7 +37,6 @@ module RAM
 	// blocks in Single Port mode.  
 	if (read)
 		assign q = ram[addr_reg];
-	end if
 
 endmodule
 

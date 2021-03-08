@@ -1,9 +1,9 @@
 module ALU(
     input [4:0] aluControl, 
     input [31:0] BusMuxInY, 
-	 input [31:0] BusMuxOut, 
+	input [31:0] BusMuxOut, 
     output [31:0] Zlowout, 
-	 output [31:0] Zhighout
+	output [31:0] Zhighout
 );
 
 //have two outputs instead
@@ -54,13 +54,13 @@ always @ (aluControl) begin
     //loop with for loop, then use logial and for each bit 
         for (i = 0 ; i < 32 ; i = i + 1) begin 
             COut = (BusMuxInY & temp1);
-		  end
-	 end 
+		end
+	end 
     else if(aluControl == 5'b01010) begin //OR
         for (i = 0 ; i < 32 ; i = i + 1) begin 
             COut[i] = BusMuxInY[i] | BusMuxOut[i];
-		  end 
-	 end 
+		end 
+	end 
     else if(aluControl == 5'b01110) begin //Multiply
         COut = ZOut[31:0];
         temp = ZOut[63:32];
