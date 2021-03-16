@@ -1,10 +1,12 @@
+
+//added write signal to DataPath
 module DataPath(
-    input [31:0] MDatain,
-    input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, incPC, Read, 
+    input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write,
 	 input [4:0] aluControl, 
 	 input clock, clear,
-    input R2In, R2out, R4In, R4out, R5In
+    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn
 );
+
 
 //registers run behavior every positive clock edge, bus will update BusMuxOUt when a change in register output is detected
 //define signals that will connect regiters to bus
@@ -30,43 +32,76 @@ wire [31:0] BusMuxInZLo;
 wire [31:0] BusMuxInPC;
 wire [31:0] BusMuxInMDR;
 wire [31:0] BusMuxInRinP;
-wire [31:0] BusMuxInRCSign;
+wire [31:0] BusMuxInCSign;
 wire [31:0] BusMuxInRY;
 wire [31:0] ALULoOut; 
 wire [31:0] ALUHiOut; 
+//phase 2
+wire [8:0] Address;
+wire [31:0] ramOut;
+wire [31:0] BusMuxInIR;
+wire r0out; 
+wire r1out; 
+wire R2out; 
+wire r3out; 
+wire R4out; 
+wire r5out; 
+wire r6out; 
+wire r7out; 
+wire r8out; 
+wire r9out; 
+wire r10out;
+wire r11out;
+wire r12out;
+wire r13out;
+wire r14out;
+wire r15out; 
+wire incPC; 
 
 //instantiate all registers
- register R0(clock, clear, R0In, BusMuxOut, BusMuxInR0);
- register R1(clock, clear, R1In, BusMuxOut, BusMuxInR1);
- register R2(clock, clear, R2In, BusMuxOut, BusMuxInR2);
- register R3(clock, clear, R3In, BusMuxOut, BusMuxInR3);
- register R4(clock, clear, R4In, BusMuxOut, BusMuxInR4);
- register R5(clock, clear, R5In, BusMuxOut, BusMuxInR5);
- register R6(clock, clear, R6In, BusMuxOut, BusMuxInR6);
- register R7(clock, clear, R7In, BusMuxOut, BusMuxInR7);
- register R8(clock, clear, R8In, BusMuxOut, BusMuxInR8);
- register R9(clock, clear, R9In, BusMuxOut, BusMuxInR9);
- register R10(clock, clear, R10In, BusMuxOut, BusMuxInR10);
- register R11(clock, clear, R11In, BusMuxOut, BusMuxInR11);
- register R12(clock, clear, R12In, BusMuxOut, BusMuxInR12);
- register R13(clock, clear, R13In, BusMuxOut, BusMuxInR13);
- register R14(clock, clear, R14In, BusMuxOut, BusMuxInR14);
- register R15(clock, clear, R15In, BusMuxOut, BusMuxInR15);
+ register R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
+ register R2(clock, clear, R2in, BusMuxOut, BusMuxInR2);
+ register R3(clock, clear, R3in, BusMuxOut, BusMuxInR3);
+ register R4(clock, clear, R4in, BusMuxOut, BusMuxInR4);
+ register R5(clock, clear, R5in, BusMuxOut, BusMuxInR5);
+ register R6(clock, clear, R6in, BusMuxOut, BusMuxInR6);
+ register R7(clock, clear, R7in, BusMuxOut, BusMuxInR7);
+ register R8(clock, clear, R8in, BusMuxOut, BusMuxInR8);
+ register R9(clock, clear, R9in, BusMuxOut, BusMuxInR9);
+ register R10(clock, clear, R10in, BusMuxOut, BusMuxInR10);
+ register R11(clock, clear, R11in, BusMuxOut, BusMuxInR11);
+ register R12(clock, clear, R12in, BusMuxOut, BusMuxInR12);
+ register R13(clock, clear, R13in, BusMuxOut, BusMuxInR13);
+ register R14(clock, clear, R14in, BusMuxOut, BusMuxInR14);
+ register R15(clock, clear, R15in, BusMuxOut, BusMuxInR15);
  register RHi(clock, clear, RHiIn, BusMuxOut, BusMuxInRHi);
  register RLO(clock, clear, RLOIn, BusMuxOut, BusMuxInRLo);
  register RZHi(clock, clear, Zin, ALUHiOut, BusMuxInZHi);
  register RZLO(clock, clear, Zin, ALULoOut, BusMuxInZLo);
- register PC(clock, clear, PCIn, BusMuxOut, BusMuxInPC);
- MDR mdr(clock, clear, MDRin, Read, BusMuxOut, MDatain, BusMuxInMDR); 
+ //register PC(clock, clear, PCIn, BusMuxOut, BusMuxInPC);
  register RInP(clock, clear, RInPIn, BusMuxOut, BusMuxInRInP);
- register RCSign(clock, clear, RCSignIn, BusMuxOut, BusMuxInRCSign);
-
+ //register RCSign(clock, clear, RCSignIn, BusMuxOut, BusMuxInCSign);
  register RY(clock, clear, Yin, BusMuxOut, BusMuxInRY);
+
+
+//phase 2 Select and Encode
+ SelectEncode selectencode(BusMuxInIR, Gra, Grb, Grc, Rin, Rout, BAout, BusMuxInCSign, R0in, R1in, R2in, R3in, R4in, R5in, R6in, R7in, R8in, R9in, R10in, R11in, R12in, R13in, R14in, R15in, R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out, R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out);
  
+ //phase 2 Memory subsystem
+ register IR(clock, clear, IRin, BusMuxOut, BusMuxInIR);
+ registerR0 R0(clock, clear, R0In, BAout, BusMuxOut, BusMuxInR0);
+ MAR mar(clock, clear, MARin, BusMuxOut,Address);
+ ram1 ram(Address,clock,BusMuxInMDR, Write, ramOut);
+ MDR mdr(clock, clear, MDRin, Read, BusMuxOut, ramOut, BusMuxInMDR); 
+ pc PC(clock, clear, incPC, BusMuxOut, BusMuxInPC);
+
+ //phase 2 conff
+conff CONFF(BusMuxOut, BusMuxInIR, ConIn, incPC); 
+
 //instantiate bus
 bus cpuBUS(
     BusMuxInR0,BusMuxInR1,BusMuxInR2, BusMuxInR3,BusMuxInR4,BusMuxInR5,BusMuxInR6,BusMuxInR7,BusMuxInR8,BusMuxInR9,BusMuxInR10,BusMuxInR11,BusMuxInR12,BusMuxInR13,BusMuxInR14,BusMuxInR15,
-    BusMuxInHi,BusMuxInLo,BusMuxInZHi,BusMuxInZLo,BusMuxInPC,BusMuxInMDR,BusMuxInRInP,BusMuxInRCSign,
+    BusMuxInHi,BusMuxInLo,BusMuxInZHi,BusMuxInZLo,BusMuxInPC,BusMuxInMDR,BusMuxInRInP,BusMuxInCSign,
     R0out,R1out,R2out,R3out,R4out,R5out,R6out,R7out,R8out,R9out,R10out,R11out,R12out,R13out,R14out,R15out,
     HIout,LOout,Zhighout,Zlowout,PCout,MDRout,INportout,Cout,BusMuxOut
 );

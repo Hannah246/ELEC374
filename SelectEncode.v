@@ -1,7 +1,7 @@
 module SelectEncode(
     input [31:0] IR,
     input Gra, Grb, Grc, Rin, Rout, BAout,
-    input [31:0] C_sign,
+    output [31:0] C_sign,
     output R0in, R1in, R2in, R3in, R4in, R5in, R6in, R7in, R8in, R9in, R10in, R11in, R12in, R13in, R14in, R15in,
     output R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out, R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out
 );
@@ -18,7 +18,8 @@ integer i;
 
 
 
-always @ (Gra or Grb or Grc) begin
+always @ (*) begin
+	// Gra or Grb or Grc
 	 OpCode = IR[31:27];
 	 Ra = IR[26:23];
 	 Rb = IR[22:19];
@@ -82,15 +83,19 @@ always @ (Gra or Grb or Grc) begin
     else if(DecoderInput == 4'b1111) begin
         DecoderOutput = 16'b1000000000000000;
     end
+	 else begin 
+		DecoderOutput = 16'b0000000000000000;
+	 end 
     for (i = 0 ; i < 16 ; i = i + 1)
         In[i] = DecoderOutput[i] & Rin;
 	 temp = Rout | BAout;
     for (i = 0 ; i < 16 ; i = i + 1)
         Out[i] = DecoderOutput[i] & temp;
-    C_sign_extended = {12{IR[18]}, [18:0]IR};
+    C_sign_extended = {{13{IR[18]}}, {IR[18:0]}};
 	 
 end
 assign {R15in, R14in, R13in, R12in, R11in, R10in, R9in, R8in, R7in, R6in, R5in, R4in, R3in, R2in, R1in, R0in} = In;
 assign {R15out, R14out, R13out, R12out, R11out, R10out, R9out, R8out, R7out, R6out, R5out, R4out, R3out, R2out, R1out, R0out} = Out;
 assign C_sign = C_sign_extended;
+
 endmodule

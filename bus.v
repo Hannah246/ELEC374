@@ -5,9 +5,13 @@ input R13out,input R14out,input R15out,input HIout,input LOout,input Zhighout,in
 
 reg [31:0] out;
 
-always @ (BusMuxInR0 or BusMuxInR1 or BusMuxInR2 or BusMuxInR3 or BusMuxInR4 or BusMuxInR5 or BusMuxInR6 or BusMuxInR7 or BusMuxInR8 or BusMuxInR9 or BusMuxInR10 or BusMuxInR11 or BusMuxInR12 or BusMuxInR13 or BusMuxInR14 or BusMuxInR15 or BusMuxInHi or BusMuxInLo or BusMuxInZHi or BusMuxInZLo or BusMuxInPC or BusMuxInMDR or BusMuxInRInP or BusMuxInRCSign or R2out or R4out or MDRout) begin  
+always @ (*) begin  
+// R0out or R1out or R2out or R4out or R5out or R6out or R7out or R8out or R9out or R10out or R11out or R12out or R13out or R14out or R15out or MDRout or PCout or HIout or LOout or Zhighout or Zlowout or InPortout or Cout
 	if(R0out) begin
 		out = BusMuxInR0;
+	end
+	else if(Cout) begin
+		out =  BusMuxInRCSign;
 	end
 	else if(R1out) begin
 		out = BusMuxInR1;
@@ -75,9 +79,9 @@ always @ (BusMuxInR0 or BusMuxInR1 or BusMuxInR2 or BusMuxInR3 or BusMuxInR4 or 
 	else if(InPortout)begin
 		out = BusMuxInRInP;
 	end
-	else if(Cout) begin
-		out =  BusMuxInRCSign;
-	end
+//	else if(Cout) begin
+//		out =  BusMuxInRCSign;
+//	end
 	else begin
 		out = 32'bx;
 	end

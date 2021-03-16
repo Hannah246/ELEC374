@@ -16,7 +16,7 @@ integer i;
 
 boothmult Mult(ZOut, BusMuxInY, BusMuxOut);
 
-always @ (aluControl) begin
+always @ (*) begin
 	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 
