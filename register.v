@@ -1,5 +1,6 @@
-module register(input clock, input clear, input enable, input [31:0] BusMuxOut, output [31:0] BusMuxIn);
+module register #(parameter VAL = 0)(input clock, input clear, input enable, input [31:0] BusMuxOut, output [31:0] BusMuxIn);
 	reg [31:0] q; 
+	initial q = VAL;
 	// Behavioral section for writing to the register 
 	always @ ( posedge clock) 
 		begin

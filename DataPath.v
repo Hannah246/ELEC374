@@ -4,7 +4,7 @@ module DataPath(
     input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write,
 	 input [4:0] aluControl, 
 	 input clock, clear,
-    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn
+    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, RoutPIn, HIout
 );
 
 
@@ -57,10 +57,11 @@ wire r13out;
 wire r14out;
 wire r15out; 
 wire incPC; 
+wire [31:0] BusMuxInRoutP; 
 
-//instantiate all registers
- register R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
- register R2(clock, clear, R2in, BusMuxOut, BusMuxInR2);
+//instantiate all register
+ register #(5) R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
+ register #(5) R2(clock, clear, R2in, BusMuxOut, BusMuxInR2);
  register R3(clock, clear, R3in, BusMuxOut, BusMuxInR3);
  register R4(clock, clear, R4in, BusMuxOut, BusMuxInR4);
  register R5(clock, clear, R5in, BusMuxOut, BusMuxInR5);
@@ -81,6 +82,7 @@ wire incPC;
  //register PC(clock, clear, PCIn, BusMuxOut, BusMuxInPC);
  register RInP(clock, clear, RInPIn, BusMuxOut, BusMuxInRInP);
  //register RCSign(clock, clear, RCSignIn, BusMuxOut, BusMuxInCSign);
+ register RoutP(clock, clear, RoutPIn, BusMuxOut, BusMuxInRoutP);
  register RY(clock, clear, Yin, BusMuxOut, BusMuxInRY);
 
 
@@ -89,11 +91,11 @@ wire incPC;
  
  //phase 2 Memory subsystem
  register IR(clock, clear, IRin, BusMuxOut, BusMuxInIR);
- registerR0 R0(clock, clear, R0In, BAout, BusMuxOut, BusMuxInR0);
+ registerR0 R0(clock, clear, R0in, BAout, BusMuxOut, BusMuxInR0);
  MAR mar(clock, clear, MARin, BusMuxOut,Address);
  ram1 ram(Address,clock,BusMuxInMDR, Write, ramOut);
  MDR mdr(clock, clear, MDRin, Read, BusMuxOut, ramOut, BusMuxInMDR); 
- pc PC(clock, clear, incPC, BusMuxOut, BusMuxInPC);
+ pc #(0) PC(clock, clear, PCin, BusMuxOut, BusMuxInPC); //incPC to PCin to '1
 
  //phase 2 conff
 conff CONFF(BusMuxOut, BusMuxInIR, ConIn, incPC); 
@@ -107,7 +109,7 @@ bus cpuBUS(
 );
 
 
-ALU alu(aluControl, BusMuxInRY, BusMuxOut, ALULoOut, ALUHiOut); 
+ALU alu(BusMuxInIR, BusMuxInRY, BusMuxOut, ALULoOut, ALUHiOut); 
 
 
 endmodule

@@ -1,12 +1,13 @@
 module ALU(
-    input [4:0] aluControl, 
+    input [31:0] Operator, 
     input [31:0] BusMuxInY, 
-	input [31:0] BusMuxOut, 
+	 input [31:0] BusMuxOut, 
     output [31:0] Zlowout, 
-	output [31:0] Zhighout
+	 output [31:0] Zhighout
 );
 
 //have two outputs instead
+reg [4:0] aluControl; 
 reg [31:0] COut;
 reg [31:0] temp;
 reg [31:0] temp1; 
@@ -17,6 +18,8 @@ integer i;
 boothmult Mult(ZOut, BusMuxInY, BusMuxOut);
 
 always @ (*) begin
+
+	 aluControl = Operator[31:27]; 
 	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 
