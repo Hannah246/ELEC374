@@ -1,4 +1,12 @@
-module pc #(parameter VAL = 0)(input clock, input clear, input enable, input [31:0] BusMuxOut, output [31:0] BusMuxIn);
+module pc #(parameter VAL = 0)(
+	input clock, 
+	input clear, 
+	input enable, 
+	input incPC, 
+	input branch
+	input [31:0] BusMuxOut, 
+	output [31:0] BusMuxIn
+);
 
 reg [31:0] q; 
 initial q = VAL;
@@ -12,9 +20,12 @@ initial q = VAL;
 			else if(enable) begin 
 				q <= BusMuxOut;
 			end
-//			else if(incPC) begin
-//				q <= q + 1;
-//			end
+			else if(incPC) begin
+				q <= q + 1;
+			end
+			else if(branch) begin 
+				q <= q + BusMuxOut; 
+			end
 		end	
 	 
 	assign BusMuxIn = q;	

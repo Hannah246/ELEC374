@@ -4,7 +4,7 @@ module DataPath(
     input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write,
 	 input [4:0] aluControl, 
 	 input clock, clear,
-    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, RoutPIn, HIout
+    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, incPC
 );
 
 
@@ -56,12 +56,14 @@ wire r12out;
 wire r13out;
 wire r14out;
 wire r15out; 
-wire incPC; 
 wire [31:0] BusMuxInRoutP; 
+wire [31:0] BusMuxInRHi; 
+// phase 3 
+wire branch; 
 
 //instantiate all register
- register #(5) R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
- register #(5) R2(clock, clear, R2in, BusMuxOut, BusMuxInR2);
+ register R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
+ register R2(clock, clear, R2in, BusMuxOut, BusMuxInR2);
  register R3(clock, clear, R3in, BusMuxOut, BusMuxInR3);
  register R4(clock, clear, R4in, BusMuxOut, BusMuxInR4);
  register R5(clock, clear, R5in, BusMuxOut, BusMuxInR5);
@@ -95,21 +97,21 @@ wire [31:0] BusMuxInRoutP;
  MAR mar(clock, clear, MARin, BusMuxOut,Address);
  ram1 ram(Address,clock,BusMuxInMDR, Write, ramOut);
  MDR mdr(clock, clear, MDRin, Read, BusMuxOut, ramOut, BusMuxInMDR); 
- pc #(0) PC(clock, clear, PCin, BusMuxOut, BusMuxInPC); //incPC to PCin to '1
+ pc PC(clock, clear, PCin, incPC, branch, BusMuxOut, BusMuxInPC); //incPC to PCin to '1
 
  //phase 2 conff
-conff CONFF(BusMuxOut, BusMuxInIR, ConIn, incPC); 
+conff CONFF(BusMuxOut, BusMuxInIR, ConIn, branch); 
 
 //instantiate bus
 bus cpuBUS(
     BusMuxInR0,BusMuxInR1,BusMuxInR2, BusMuxInR3,BusMuxInR4,BusMuxInR5,BusMuxInR6,BusMuxInR7,BusMuxInR8,BusMuxInR9,BusMuxInR10,BusMuxInR11,BusMuxInR12,BusMuxInR13,BusMuxInR14,BusMuxInR15,
-    BusMuxInHi,BusMuxInLo,BusMuxInZHi,BusMuxInZLo,BusMuxInPC,BusMuxInMDR,BusMuxInRInP,BusMuxInCSign,
+    BusMuxInRHi,BusMuxInLo,BusMuxInZHi,BusMuxInZLo,BusMuxInPC,BusMuxInMDR,BusMuxInRInP,BusMuxInCSign,
     R0out,R1out,R2out,R3out,R4out,R5out,R6out,R7out,R8out,R9out,R10out,R11out,R12out,R13out,R14out,R15out,
     HIout,LOout,Zhighout,Zlowout,PCout,MDRout,INportout,Cout,BusMuxOut
 );
 
 
-ALU alu(BusMuxInIR, BusMuxInRY, BusMuxOut, ALULoOut, ALUHiOut); 
+ALU alu(aluControl, BusMuxInRY, BusMuxOut, ALULoOut, ALUHiOut); 
 
 
 endmodule

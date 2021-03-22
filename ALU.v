@@ -1,5 +1,5 @@
 module ALU(
-    input [31:0] Operator, 
+    input [4:0] aluControl, 
     input [31:0] BusMuxInY, 
 	 input [31:0] BusMuxOut, 
     output [31:0] Zlowout, 
@@ -19,7 +19,7 @@ boothmult Mult(ZOut, BusMuxInY, BusMuxOut);
 
 always @ (*) begin
 
-	 aluControl = Operator[31:27]; 
+	 // aluControl = Operator[31:27]; 
 	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 

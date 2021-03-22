@@ -1,0 +1,43 @@
+module RAM
+#(parameter DATA_WIDTH=32, parameter ADDR_WIDTH=9)
+(
+	input [(DATA_WIDTH-1):0] data,
+	input [(ADDR_WIDTH-1):0] addr,
+	input read,write, clk,
+	output [(DATA_WIDTH-1):0] q
+);
+
+	// Declare the RAM variable
+	reg [DATA_WIDTH-1:0] ram[2**ADDR_WIDTH-1:0];
+
+	// Variable to hold the registered read address
+	reg [ADDR_WIDTH-1:0] addr_reg;
+
+	// Specify the initial contents.  You can also use the $readmemb
+	// system task to initialize the RAM variable from a text file.
+	// See the $readmemb template page for details.
+	initial 
+	begin : INIT
+		integer i;
+		for(i = 0; i < 2**ADDR_WIDTH; i = i + 1)
+			ram[i] = {DATA_WIDTH{1'b1}};
+	end 
+
+	always @ (posedge clk)
+	begin
+		// Write
+		if (write)
+			ram[addr] <= data;
+
+		addr_reg <= addr;
+	end
+
+	// Continuous assignment implies read returns NEW data.
+	// This is the natural behavior of the TriMatrix memory
+	// blocks in Single Port mode.  
+	if (read)
+		assign q = ram[addr_reg];
+	end if
+
+endmodule
+
