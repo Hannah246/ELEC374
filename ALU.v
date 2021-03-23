@@ -7,7 +7,7 @@ module ALU(
 );
 
 //have two outputs instead
-reg [4:0] aluControl; 
+//reg [4:0] aluControl; 
 reg [31:0] COut;
 reg [31:0] temp;
 reg [31:0] temp1; 

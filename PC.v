@@ -3,7 +3,7 @@ module pc #(parameter VAL = 0)(
 	input clear, 
 	input enable, 
 	input incPC, 
-	input branch
+	input branch,
 	input [31:0] BusMuxOut, 
 	output [31:0] BusMuxIn
 );
