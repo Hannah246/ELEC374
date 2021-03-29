@@ -71,9 +71,8 @@ always @(Present_state)     // do the required job ineach state
             end
 
             T3: begin 
-					 MDRout <= 0; 
-					 IRin <= 0; 
-				
+				MDRout <= 0; 
+				IRin <= 0; 
                 Gra <= 1;
                 Rout <= 1;
                 RoutPIn <= 1;

@@ -4,7 +4,8 @@ module DataPath(
     input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write,
 	 input [4:0] aluControl, 
 	 input clock, clear,
-    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, incPC
+    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn, incPC,
+	 inout [31:0] ramOut
 );
 
 
@@ -38,7 +39,6 @@ wire [31:0] ALULoOut;
 wire [31:0] ALUHiOut; 
 //phase 2
 wire [8:0] Address;
-wire [31:0] ramOut;
 wire [31:0] BusMuxInIR;
 wire r0out; 
 wire r1out; 
@@ -95,7 +95,7 @@ wire branch;
  register IR(clock, clear, IRin, BusMuxOut, BusMuxInIR);
  registerR0 R0(clock, clear, R0in, BAout, BusMuxOut, BusMuxInR0);
  MAR mar(clock, clear, MARin, BusMuxOut,Address);
- ram1 ram(Address,clock,BusMuxInMDR, Write, ramOut);
+ ram1 ram(Address, clock, BusMuxInMDR, Write, ramOut);
  MDR mdr(clock, clear, MDRin, Read, BusMuxOut, ramOut, BusMuxInMDR); 
  pc PC(clock, clear, PCin, incPC, branch, BusMuxOut, BusMuxInPC); //incPC to PCin to '1
 

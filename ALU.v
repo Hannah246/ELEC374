@@ -23,9 +23,22 @@ always @ (*) begin
 	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 
-    if(aluControl == 5'b00011) begin //Add
+    if(aluControl == 5'b00011 || aluControl == 5'b00000 || aluControl == 5'b00001 || aluControl == 5'b00010) begin //Add
         COut = BusMuxInY + BusMuxOut;
 	 end
+	 else if (aluControl == 5'b01011) begin //addi
+		  COut = BusMuxInY + BusMuxOut;
+	 end 
+	 else if (aluControl == 5'b01101) begin //ori
+			for (i = 0 ; i < 32 ; i = i + 1) begin 
+            COut[i] = BusMuxInY[i] | BusMuxOut[i];
+			end 
+	 end 
+	 else if (aluControl == 5'b01100) begin //andi
+			for (i = 0 ; i < 32 ; i = i + 1) begin 
+            COut = (BusMuxInY & temp1);
+			end
+	 end 
     else if(aluControl == 5'b00100) begin //Sub
         COut = BusMuxInY - BusMuxOut;
 	 end

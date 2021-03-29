@@ -1,20 +1,20 @@
 `timescale 1ns/10ps
 
-module cpu(); 
-	//define clock, reset ConFF
+module cpu(input clock, reset); 
+	//import clock, reset 
+	//cpu top level entity
 
 	wire PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, incPC, Read, 
-	Write, clear, Gra, Grb, Grc, Rin, Rout, BAout, Cout;
-	reg reset, CONFF, clock;
+	Write, clear, Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn;
+	reg CONFF;
 	wire [4:0] aluControl;
+	wire [31:0] instr; 
 
-	initial begin
-		clock = 0;
-		forever #10 clock = ~clock; 
-	end 
+	DataPath DUT(PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write, aluControl, clock, clear, 
+	Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn, incPC, instr);
 
-	DataPath DUT(PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, incPC, Read, Write,aluControl, clock, clear,Gra, Grb, Grc, Rin, Rout, BAout, Cout);
-
-	control_unit CU( PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin,incPC, Read, Write, clear,Gra, Grb, Grc, Rin, Rout, BAout, Cout,aluControl,clock, reset, CONFF);
-
+	control_unit CU(PCout, Zlowout, MDRout, incPC, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write, 
+	clear, Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn, aluControl, clock, reset, CONFF, instr); 
+	
+	
 endmodule 

@@ -85,27 +85,24 @@ always @(Present_state)     // do the required job ineach state
             T3: begin 
                 MDRout<= 0;
                 IRin <= 0;
-                
                 Gra <= 1;
                 Rout <= 1; 
                 ConIn <= 1; 
                 //set to 1 to generate R0out = 1 and store value of R0 (0) into Y register
-					 #5 Gra <= 0; 
+				#5 Gra <= 0; 
             end 
            
             T4: begin
-					 Rout <= 0; 
-					 ConIn <= 0; 
-                
+				Rout <= 0; 
+				ConIn <= 0; 
                 PCout <= 1; Yin <= 1; 
             end
 
             T5: begin
                 PCout <= 0; Yin <= 0; 
-
-					 Cout <= 1;
+                Cout <= 1;
                 Operator <= 5'b00011; // ADD
-					 Zin <= 1; 
+				Zin <= 1; 
 
                 // store Z register contents (85) in bus
                 // Zlowout <= 1;

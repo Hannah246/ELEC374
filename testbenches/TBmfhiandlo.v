@@ -72,12 +72,12 @@ always @(Present_state)     // do the required job ineach state
             end
 
             T3: begin 
-					 MDRout <= 0; 
-					 IRin <= 0; 
+				MDRout <= 0; 
+				IRin <= 0; 
                 Read <= 0; 
                 MDRin <= 0;
                 //load value in MDR on Bus
-					 HIout <= 1;
+				HIout <= 1;
                 //set R1in signal to 1, value that was in memory at address 85 should now be stored in R1
                 Gra <= 1;  //RA in Selectencode should be 0001 in binary
                 Rin <= 1;	

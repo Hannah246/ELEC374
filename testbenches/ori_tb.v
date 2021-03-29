@@ -79,16 +79,16 @@ always @(Present_state)     // do the required job ineach state
                 //set to 1 to generate R0out = 1 and store value of R0 (0) into Y register
                 Rout <= 1; 
                 Yin <= 1; 
-					 #5 Grb <= 0; 
+				#5 Grb <= 0; 
             end 
            
             T4: begin
-					 Rout <= 0;
+				Rout <= 0;
                 Yin <= 0; 
                 //store C sign extended value on bus (should be 85 decimal)
                 Cout <= 1; 
                 //perform add between 85/BuxMuxOut + R0 (0)/BuxMuxInY
-					 Operator <= 5'b00011; // Add
+				Operator <= 5'b00011; // Add
                 //store result in Z register
                 Zin <=1;
 
@@ -96,10 +96,9 @@ always @(Present_state)     // do the required job ineach state
 
             //read from ram
             T5: begin
-					 Cout <= 0;
+				Cout <= 0;
                 Zin <=0;
-					 // Grb <= 0; 
-
+				// Grb <= 0; 
                 //store Z register contents (85) in bus
                 Zlowout <= 1;
                 Gra <= 1; 

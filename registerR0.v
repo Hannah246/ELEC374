@@ -1,3 +1,5 @@
+
+
 module registerR0(input clock, input clear, input enable,input BAout, input [31:0] BusMuxOut, output [31:0] BusMuxIn);
 	reg [31:0] q; 
 	reg [31:0] out;
