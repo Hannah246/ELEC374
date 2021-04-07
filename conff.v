@@ -38,7 +38,7 @@ always @ (ConIn) begin
 		 temp = BusMuxInIR[1] & (|BusMuxIn);            // IR[1] AND (NOT Bus)
 
 		 if (temp != 1'b0) begin                 // if not equals 0
-																// not working, check with TA
+																
 			  temp2 = temp; 
 		 end 
 	end 

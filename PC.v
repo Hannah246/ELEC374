@@ -23,9 +23,7 @@ initial q = VAL;
 			else if(incPC) begin
 				q <= q + 1;
 			end
-			else if(branch) begin 
-				q <= q + BusMuxOut; 
-			end
+			
 		end	
 	 
 	assign BusMuxIn = q;	

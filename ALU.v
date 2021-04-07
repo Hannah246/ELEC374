@@ -23,7 +23,7 @@ always @ (*) begin
 	 
 	 temp1 = BusMuxOut; 
 	 temp2 = BusMuxInY; 
-    if(aluControl == 5'b00011 || aluControl == 5'b00000 || aluControl == 5'b00001 || aluControl == 5'b00010) begin //Add
+    if(aluControl == 5'b00011 || aluControl == 5'b00000 || aluControl == 5'b00001 || aluControl == 5'b00010 || aluControl == 5'b10010) begin //Add
         COut = BusMuxInY + BusMuxOut;
 	 end
 	 else if (aluControl == 5'b01011) begin //addi
@@ -86,13 +86,13 @@ always @ (*) begin
 	 end
     else if(aluControl == 5'b10000) begin // Negate
         for (i = 0 ; i < 32 ; i = i + 1) begin 
-				COut[i] = ~temp1[i]; 
+				COut[i] = ~temp2[i];
 		  end 
 		  COut[0] = COut[0] + 1'b1; 
 	 end
     else if(aluControl == 5'b10001) begin // Not
         for (i = 0 ; i < 32 ; i = i + 1) begin 
-				COut[i] = ~temp1[i]; 
+				COut[i] = ~temp2[i]; 
 		  end 
 	 end
 	 if(aluControl != 5'b01111)

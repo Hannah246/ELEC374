@@ -22,6 +22,7 @@ module control_unit(
         branch3 = 6'b100010, branch4 = 6'b100011, branch5 = 6'b100100, branch6 = 6'b100101, 
         jump3 = 6'b100110, mfhilo3 = 6'b100111, inout3 = 6'b101000; 
     reg [5:0] Present_state = Reset_state; 
+	 reg setPC = 0; 
 	 //reg [4:0] aluCode; 
 	 
 
@@ -38,7 +39,7 @@ always @ (posedge clk, posedge reset)
                                         5'b00000     :   #40 Present_state = load3;
                                         5'b00001     :   #40 Present_state = loadi3;
                                         5'b00010     :   #40 Present_state = store3;
-                                        5'b00011     :   #40 Present_state = alu3;
+                                        5'b00011     :   #40 Present_state = alu3; //add
                                         5'b00100     :   #40 Present_state = alu3;
                                         5'b00101     :   #40 Present_state = alu3;
                                         5'b00110     :   #40 Present_state = alu3;
@@ -50,7 +51,7 @@ always @ (posedge clk, posedge reset)
 													 5'b01100	  : 	#40 Present_state = andi3; //andi 
 													 5'b01101	  : 	#40 Present_state = ori3; //ori
 													 
- 
+														
                                         5'b01110     :   #40 Present_state = muldiv3;
                                         5'b01111     :   #40 Present_state = muldiv3;
                                         5'b10000     :   #40 Present_state = alureg3;
@@ -63,6 +64,8 @@ always @ (posedge clk, posedge reset)
                                         5'b10110     :   #40 Present_state = inout3; //out 
                                         5'b10111     :   #40 Present_state = mfhilo3; //mfhi
                                         5'b10100     :   #40 Present_state = mfhilo3; //mflo
+													 
+													 5'b11001	  : 	#40 Present_state = fetch0; //nop
 
 
                                     endcase
@@ -71,46 +74,65 @@ always @ (posedge clk, posedge reset)
             //any alu related operations with three registers
             alu3            :   #40 Present_state = alu4; 
             alu4            :   #40 Present_state = alu5; 
+				alu5		       :   #40 Present_state = fetch0; 
 
             //any alu related operations with two registers (not/neg)
             alureg3         :   #40 Present_state = alureg4; 
             alureg4         :   #40 Present_state = alureg5; 
+				alureg5	       :   #40 Present_state = fetch0; 
             
             //mul and div
             muldiv3         :   #40 Present_state = muldiv4; 
             muldiv4         :   #40 Present_state = muldiv5; 
+				muldiv5	       :   #40 Present_state = fetch0; 
             
             //addi         
             addi3            :   #40 Present_state = addi4; 
             addi4            :   #40 Present_state = addi5; 
+				addi5			     :   #40 Present_state = fetch0; 
             
             //load
             load3           :   #40 Present_state = load4; 
             load4           :   #40 Present_state = load5; 
             load5           :   #40 Present_state = load6; 
             load6           :   #40 Present_state = load7; 
+				load7		       :   #40 Present_state = fetch0; 
             
             //load immediate
             loadi3           :   #40 Present_state = loadi4; 
             loadi4           :   #40 Present_state = loadi5; 
+				loadi5		     :   #40 Present_state = fetch0; 
             
             //store
             store3           :   #40 Present_state = store4; 
             store4           :   #40 Present_state = store5; 
             store5           :   #40 Present_state = store6;
+				store6		     :   #40 Present_state = fetch0; 
 
             //andi
             andi3            :   #40 Present_state = andi4; 
             andi4            :   #40 Present_state = andi5; 
+				andi5			     :   #40 Present_state = fetch0; 
 
             //ori 
             ori3            :   #40 Present_state = ori4; 
             ori4            :   #40 Present_state = ori5; 
+				ori5		       :   #40 Present_state = fetch0; 
 
             //branch 
             branch3         :   #40 Present_state = branch4; 
             branch4         :   #40 Present_state = branch5; 
             branch5         :   #40 Present_state = branch6; 
+				branch6	       :   #40 Present_state = fetch0; 
+				
+				//jump 
+				jump3		       :   #40 Present_state = fetch0; 
+				
+				//mfhilo
+				mfhilo3	       :   #40 Present_state = fetch0; 
+				
+				//inout 
+				inout3	       :   #40 Present_state = fetch0; 
 
         endcase 
     end 
@@ -122,28 +144,30 @@ always @(Present_state)
     begin 
 			case (Present_state)
 				Reset_state: begin
-				PCout <= 0;   Zlowout <= 0;   MDRout<= 0;   //initialize the signals
+					 PCout <= 0;   	 Zlowout <= 0; MDRout<= 0;   //initialize the signals
                 MARin <= 0;   Zin <= 0;  
                 PCin <=0;   MDRin <= 0;   IRin  <= 0;   Yin <= 0;  
                 IncPC <= 0;   Read <= 0;   
-                Gra<= 0; Grb<= 0; Grc<= 0; Rin<= 0; Rout<= 0; BAout<= 0; Cout<=0;
+                Gra<= 0;	 Grb <= 0; Grc<= 0; Rin<= 0; Rout<= 0; BAout<= 0; Cout<=0;
                 clear <= 1; //initialize registers to 0
-				#10 clear <= 0; 
+					 //#10 clear <= 0; 
 			end
 
             //fetch instruction
 			fetch0: begin
+				Zlowout <= 0;
+            
+				clear <= 0; 
 				PCout <= 1; 
 				MARin <= 1; 
-				IncPC <= 1;
+				
 			end
 
 			fetch1: begin
 				PCout <= 0;
 				MARin <= 0; 
-				IncPC <= 0;
-				#5 Read <= 1; 
-				#5 MDRin <= 1;
+				Read <= 1; 
+				MDRin <= 1;
 			 end
 			 
 			 fetch2: begin
@@ -151,10 +175,12 @@ always @(Present_state)
 				MDRin <= 0;
 				MDRout<= 1; 
 				IRin <= 1; 
+				IncPC <= 1;
+				#30 IncPC <= 0;
 			 end
 			 
              //alu three reg
-            alu3:begin
+          alu3:begin
 				MDRout<= 0; 
 				IRin <= 0;
 				Grb <= 1;
@@ -164,23 +190,24 @@ always @(Present_state)
 			 end
 			 
 			 alu4:begin
-                 Yin <= 0; 
-                 Grc <= 1;
+             Yin <= 0; 
+             Grc <= 1;
 				 BAout <= 1;   
 				 #5 Zin <=1;
-                 #10 Grc <= 0; 
+             #10 Grc <= 0; 
 			 end
-			 
 			 alu5:begin
-                BAout <= 0;
-				Zin <=0;
+            BAout <= 0;
+				Zin <= 0;
 				Zlowout <= 1;
 				Gra <= 1;  
 				Rin <= 1;
+				#10 Gra <= 0; 
+				#10 Rin <= 0; 
 			 end
 
-            //alu two reg
-            alureg3:begin
+          //alu two reg
+          alureg3:begin
 				MDRout<= 0; 
 				IRin <= 0;
 				Grb <= 1;
@@ -190,16 +217,18 @@ always @(Present_state)
 			 end
 			 
 			alureg4:begin
-                BAout <= 0;
+            BAout <= 0;
 				Yin <=0; 
-                Zin <= 1;
+            #5 Zin <= 1;
 			 end
 			 
 			 alureg5:begin
-				Zin <=0;
+				Zin <= 0;
 				Zlowout <= 1;
 				Gra <= 1;  
 				Rin <= 1;
+				#10 Gra <= 0; 
+				#10 Rin <= 0; 
 			 end
             
             //muldiv
@@ -212,15 +241,15 @@ always @(Present_state)
 				#5 Gra <= 0; 
 			 end
 
-             muldiv4:begin
+          muldiv4:begin
 				 Yin <= 0; 
-                 Grb <= 1;
+             Grb <= 1;
 				 BAout <= 1;   
 				 #5 Zin <=1;
-                 #10 Grb<=0;
+             #10 Grb<=0;
 			 end
 
-              muldiv5:begin
+          muldiv5:begin
 				Zlowout <= 1;
                 //LOout <= 1;
                //#5 Zhighout < =1;
@@ -253,6 +282,8 @@ always @(Present_state)
 				Zlowout <= 1;
 				Gra <= 1;  
 				Rin <= 1;
+				#10 Gra <= 0; 
+				#10 Rin <= 0; 
 			 end
 
              //load
@@ -278,8 +309,7 @@ always @(Present_state)
 			  	Cout <= 0;
                 Zin <=0;
                 Zlowout <= 1;
-                MARin <= 1;    
-
+                MARin <= 1;  
 			 end
 
              load6:begin
@@ -287,15 +317,16 @@ always @(Present_state)
                MARin<=0;
                Read <= 1; 
                MDRin <= 1;
-					 
-
 			 end
+			 
              load7:begin
 			   Read <= 0; 
                MDRin <= 0;
 			   MDRout <= 1;
                Gra <= 1;  
-               Rin <= 1;	    
+               Rin <= 1;	
+					#15 Gra <= 0;  
+					 #15 Rin <= 0;				
 
 			 end
 
@@ -313,19 +344,20 @@ always @(Present_state)
              loadi4:begin
                 BAout <= 0;
                 Yin <= 0; 
-                Cout <=1; 
+                Cout <= 1; 
 					 //aluCode <= 5'b00011;	
-                Zin <=1;
+                Zin <= 1;
 
              end
 
              loadi5:begin
-		        Cout <= 0;
+					 Cout <= 0;
                 Zin <=0;
                 Zlowout <= 1;
                 Gra <= 1;  
                 Rin <= 1;
-
+					 #15 Gra <= 0;  
+					 #15 Rin <= 0;
              end
 
              //store
@@ -381,6 +413,8 @@ always @(Present_state)
                 Zlowout <= 1;
                 Gra <= 1; 
                 Rin <= 1;
+					 #10 Gra <= 0; 
+					 #10 Rin <= 0; 
             end 
 
             //or immediate 
@@ -405,33 +439,45 @@ always @(Present_state)
                 Zlowout <= 1;
                 Gra <= 1; 
                 Rin <= 1;
+					 #10 Gra <= 0; 
+					 #10 Rin <= 0; 
             end 
 
             //branch 
-            branch3: begin 
-                MDRout<= 0;
+            branch3: begin
+                MDRout <= 0;
                 IRin <= 0;
                 Gra <= 1;
                 Rout <= 1; 
-                ConIn <= 1; 
-				#5 Gra <= 0; 
+                #5 ConIn <= 1; 
             end 
             branch4: begin 
+					 if (CONFF) begin 
+						setPC = 1; 
+					 end 
+					 Gra <= 0; 
                 Rout <= 0; 
-				ConIn <= 0; 
+					 ConIn <= 0; 
+					 //Cout <= 1;
+					 //#5 PCin <= 1; 
                 PCout <= 1; 
                 Yin <= 1; 
             end 
             branch5: begin 
+					 //PCin <= 0; 
                 PCout <= 0; Yin <= 0; 
                 Cout <= 1;
                 //aluCode <= 5'b00011; // ADD
 					 Zin <= 1; 
             end 
             branch6: begin 
-                Cout <= 0; 
+                #3 Cout <= 0; 
                 Zin <= 0; 
                 Zlowout <= 1;
+					 if (setPC) begin 
+						PCin = 1; 
+					 end 
+					 #30 PCin <= 0; 
             end 
 
             //jump 
@@ -447,21 +493,26 @@ always @(Present_state)
             //mfhilo 
             mfhilo3: begin 
                 MDRout <= 0; 
-				IRin <= 0; 
+					 IRin <= 0; 
                 Read <= 0; 
                 MDRin <= 0;
-				HIout <= 1;
+					 HIout <= 1;
                 Gra <= 1;  
                 Rin <= 1;
+					 #10 Gra <= 0; 
+					 #10 Rin <= 0; 
             end 
 
             //inout 
             inout3: begin 
                 MDRout <= 0; 
-					IRin <= 0; 
+					 IRin <= 0; 
                 Gra <= 1;
                 Rout <= 1;
                 RoutPIn <= 1;
+					 #10 Gra <= 0; 
+					 #10 Rout <= 0; 
+					 #10 RoutPIn <= 0; 
             end 
 
 		endcase

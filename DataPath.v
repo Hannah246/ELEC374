@@ -5,7 +5,8 @@ module DataPath(
 	 input [4:0] aluControl, 
 	 input clock, clear,
     input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn, incPC,
-	 inout [31:0] ramOut
+	 inout [31:0] ramOut, 
+	 output conffOut
 );
 
 
@@ -99,8 +100,9 @@ wire branch;
  MDR mdr(clock, clear, MDRin, Read, BusMuxOut, ramOut, BusMuxInMDR); 
  pc PC(clock, clear, PCin, incPC, branch, BusMuxOut, BusMuxInPC); //incPC to PCin to '1
 
+ 
  //phase 2 conff
-conff CONFF(BusMuxOut, BusMuxInIR, ConIn, branch); 
+conff CONFF(BusMuxOut, BusMuxInIR, ConIn, conffOut); 
 
 //instantiate bus
 bus cpuBUS(
