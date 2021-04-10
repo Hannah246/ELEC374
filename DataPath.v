@@ -4,9 +4,10 @@ module DataPath(
     input PCout, Zlowout, MDRout, MARin, Zin, PCin, MDRin, IRin, Yin, Read, Write,
 	 input [4:0] aluControl, 
 	 input clock, clear,
-    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, RoutPIn, incPC,
+    input Gra, Grb, Grc, Rin, Rout, BAout, Cout, ConIn, HIout, LOout, RoutPIn, incPC,
 	 inout [31:0] ramOut, 
-	 output conffOut
+	 output conffOut, 
+	 input RHiIn, RLOIn, Zhighout
 );
 
 
@@ -61,6 +62,7 @@ wire [31:0] BusMuxInRoutP;
 wire [31:0] BusMuxInRHi; 
 // phase 3 
 wire branch; 
+wire [31:0] BusMuxInLo; 
 
 //instantiate all register
  register R1(clock, clear, R1in, BusMuxOut, BusMuxInR1);
@@ -79,7 +81,7 @@ wire branch;
  register R14(clock, clear, R14in, BusMuxOut, BusMuxInR14);
  register R15(clock, clear, R15in, BusMuxOut, BusMuxInR15);
  register RHi(clock, clear, RHiIn, BusMuxOut, BusMuxInRHi);
- register RLO(clock, clear, RLOIn, BusMuxOut, BusMuxInRLo);
+ register RLO(clock, clear, RLOIn, BusMuxOut, BusMuxInLo);
  register RZHi(clock, clear, Zin, ALUHiOut, BusMuxInZHi);
  register RZLO(clock, clear, Zin, ALULoOut, BusMuxInZLo);
  //register PC(clock, clear, PCIn, BusMuxOut, BusMuxInPC);

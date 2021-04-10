@@ -83,6 +83,7 @@ always @ (*) begin
 	 end
     else if(aluControl == 5'b01111) begin //Divide
         COut = BusMuxInY / BusMuxOut;
+		  temp = BusMuxInY % BusMuxOut; 
 	 end
     else if(aluControl == 5'b10000) begin // Negate
         for (i = 0 ; i < 32 ; i = i + 1) begin 
@@ -95,7 +96,11 @@ always @ (*) begin
 				COut[i] = ~temp2[i]; 
 		  end 
 	 end
-	 if(aluControl != 5'b01111)
+	 else if (aluControl == 5'b11010) begin //store i 
+			COut = BusMuxInY; 
+	 end 
+	 
+	 if(aluControl != 5'b01111 && aluControl != 5'b01110)
 	    temp = {32{COut[31]}};
 	// assign the results to z high and z low 
 	
