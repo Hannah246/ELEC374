@@ -23,7 +23,8 @@ module control_unit(
 		  ori4 = 6'b100000, ori5 = 6'b100001, branch3 = 6'b100010, branch4 = 6'b100011, branch5 = 6'b100100, branch6 = 6'b100101, 
         jump3 = 6'b100110, mfhi3 = 6'b100111, inout3 = 6'b101000, storei3 = 6'b101001, storei4 = 6'b101010, 
 		  storei5 = 6'b101011, storei6 = 6'b101100, store7 = 6'b101101, muldiv6 = 6'b101110, muldiv7 = 6'b101111, 
-		  mfhi4 = 6'b110000, mflo3 = 6'b110001, mflo4 = 6'b110010, jump4 = 6'b110011, halt3 = 6'b110100; 
+		  mfhi4 = 6'b110000, mflo3 = 6'b110001, mflo4 = 6'b110010, jump4 = 6'b110011, halt3 = 6'b110100, 
+		  alu6 = 6'b110101; 
     reg [5:0] Present_state = Reset_state; 
 	 reg setPC = 0; 
 	 //reg [4:0] aluCode; 
@@ -80,7 +81,8 @@ always @ (posedge clk, posedge reset)
             //any alu related operations with three registers
             alu3            :   #40 Present_state = alu4; 
             alu4            :   #40 Present_state = alu5; 
-				alu5		       :   #40 Present_state = fetch0; 
+				alu5		       :   #40 Present_state = alu6; 
+				alu6		       :   #40 Present_state = fetch0; 
 
             //any alu related operations with two registers (not/neg)
             alureg3         :   #40 Present_state = alureg4; 
@@ -208,26 +210,31 @@ always @(Present_state)
 				MDRout<= 0; 
 				IRin <= 0;
 				Grb <= 1;
-				BAout <= 1;
+				Rout <= 1;
 				Yin <= 1; 
 				#5 Grb <= 0; 
 			 end
 			 alu4:begin
-             Yin <= 0; 
-             Grc <= 1;
-				 BAout <= 1;   
-				 Zin <= 1;
-             #5 Grc <= 0; 
+				//BAout <= 0; 
+            Yin <= 0; 
+				Grc <= 1;
+				Rout <= 1;   
+				#10 Zin <= 1;
+            #10 Grc <= 0; 
+				//#10 Rout <= 0;
 			 end
 			 alu5:begin
-            BAout <= 0;
+            Rout <= 0; 
 				Zin <= 0;
+			 end
+			 alu6: begin 
+				
 				Zlowout <= 1;
 				Gra <= 1;  
 				Rin <= 1;
 				#10 Gra <= 0; 
 				#10 Rin <= 0; 
-			 end
+			 end 
 
           //alu two reg
           alureg3:begin
@@ -238,13 +245,11 @@ always @(Present_state)
 				Yin <= 1; 
 				#5 Grb <= 0; 
 			 end
-			 
 			alureg4:begin
             BAout <= 0;
 				Yin <=0; 
             #5 Zin <= 1;
 			 end
-			 
 			 alureg5:begin
 				Zin <= 0;
 				Zlowout <= 1;
@@ -298,7 +303,6 @@ always @(Present_state)
 				Yin <= 1; 
 				#5 Grb <= 0; 
 			 end
-			 
 			 addi4:begin
 				 BAout <= 0;
 				 Yin <= 0; 
@@ -306,7 +310,6 @@ always @(Present_state)
              //aluCode <= 5'b00011;
 				 Zin <=1;
 			 end
-			 
 			 addi5:begin
 				Cout <= 0;
 				Zin <=0;
